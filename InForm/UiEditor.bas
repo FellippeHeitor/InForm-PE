@@ -1559,15 +1559,15 @@ SUB __UI_BeforeUpdateDisplay
         IF RIGHT$(Caption(__UI_FormID), 1) <> "*" THEN Caption(__UI_FormID) = Caption(__UI_FormID) + "*"
     END IF
 
-    'Ctrl+Z? Ctrl+Y?
+    'Ctrl+Z? Ctrl+Y? Ctrl+Shift+Z? (Cmd on macOS)
     Control(EditMenuUndo).Disabled = True
     Control(EditMenuRedo).Disabled = True
     IF UndoPointer > 0 THEN Control(EditMenuUndo).Disabled = False
     IF UndoPointer < TotalUndoImages THEN Control(EditMenuRedo).Disabled = False
 
-    IF (__UI_KeyHit = ASC("z") OR __UI_KeyHit = ASC("Z")) AND __UI_CtrlIsDown THEN
-        SendSignal 214
-    ELSEIF (__UI_KeyHit = ASC("y") OR __UI_KeyHit = ASC("Y")) AND __UI_CtrlIsDown THEN
+    IF (__UI_KeyHit = ASC("z") OR __UI_KeyHit = ASC("Z")) AND __UI_CommandKeyDown THEN
+        IF __UI_ShiftIsDown THEN SendSignal 215 ELSE SendSignal 214
+    ELSEIF (__UI_KeyHit = ASC("y") OR __UI_KeyHit = ASC("Y")) AND __UI_CommandKeyDown THEN
         SendSignal 215
     END IF
 
@@ -2583,6 +2583,9 @@ END SUB
 SUB __UI_BeforeInit
     __UI_KeepScreenHidden = True
     __UI_EditorMode = True
+    $IF MAC THEN
+        __UI_MacShortcuts = True
+    $END IF
 END SUB
 
 SUB __UI_FormResized
@@ -2697,8 +2700,19 @@ SUB __UI_OnLoad
     i = RegisterKeyCombo("ctrl+n", FileMenuNew)
     i = RegisterKeyCombo("ctrl+o", FileMenuOpen)
     i = RegisterKeyCombo("ctrl+s", FileMenuSave)
+    i = RegisterKeyCombo("ctrl+shift+s", FileMenuSaveAs)
+    'Text boxes keep these for their own text (see TextBoxKeepsKey in InForm.ui)
+    i = RegisterKeyCombo("ctrl+x", EditMenuCut)
+    i = RegisterKeyCombo("ctrl+c", EditMenuCopy)
+    i = RegisterKeyCombo("ctrl+v", EditMenuPaste)
+    i = RegisterKeyCombo("ctrl+a", EditMenuSelectAll)
     i = RegisterKeyCombo("ctrl+z", EditMenuUndo)
-    i = RegisterKeyCombo("ctrl+y", EditMenuRedo)
+    IF __UI_MacShortcuts THEN
+        i = RegisterKeyCombo("ctrl+shift+z", EditMenuRedo) 'Shown as Cmd+Shift+Z; Cmd+Y also works
+        ToolTip(OptionsMenuSnapLines) = "Snapping can be temporarily bypassed by holding Cmd."
+    ELSE
+        i = RegisterKeyCombo("ctrl+y", EditMenuRedo)
+    END IF
     i = RegisterKeyCombo("f1", HelpMenuHelp)
 
     DIM FileToOpen$, FreeFileNum AS INTEGER
@@ -3064,7 +3078,7 @@ SUB __UI_KeyPress (id AS LONG)
             END IF
         CASE KeyboardComboBT
             DIM Combo$
-            IF __UI_CtrlIsDown THEN Combo$ = "Ctrl+"
+            IF __UI_CommandKeyDown THEN Combo$ = "Ctrl+" 'Saved as Ctrl+ even when Cmd is used on macOS
             IF __UI_ShiftIsDown THEN Combo$ = Combo$ + "Shift+"
             SELECT CASE __UI_KeyHit
                 CASE 27
