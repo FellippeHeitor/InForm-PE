@@ -1851,6 +1851,9 @@ END SUB
 
 SUB __UI_BeforeInit
     __UI_DesignMode = True
+    $IF MAC THEN
+        __UI_MacShortcuts = True
+    $END IF
 
     IF _FILEEXISTS("InForm/UiEditorPreview.frmbin") THEN
         DIM FileToLoad AS INTEGER, a$
