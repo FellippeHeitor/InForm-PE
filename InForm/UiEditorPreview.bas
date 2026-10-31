@@ -3371,7 +3371,7 @@ SUB SavePreview (Destination AS _BYTE)
     DIM b$, i AS LONG, a$, FontSetup$
     DIM BinFileNum AS INTEGER, TxtFileNum AS INTEGER
     DIM Clip$, Disk AS _BYTE, TCP AS _BYTE, UndoBuffer AS _BYTE
-    DIM PreviewData$, Dummy AS LONG
+    DIM PreviewData$
 
     CONST Debug = False
 
