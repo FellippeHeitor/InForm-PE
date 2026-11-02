@@ -331,6 +331,10 @@ SUB __UI_LoadForm
     ToolTip(__UI_NewID) = "New data grid (a table of columns and rows)"
     Control(__UI_NewID).CanHaveFocus = True
 
+    __UI_NewID = __UI_NewControl(__UI_Type_Button, "AddPropertyGrid", 22, 22, 445, 10, __UI_GetID("Toolbox"))
+    ToolTip(__UI_NewID) = "New property grid (rows of labels and values; double-click it to edit its rows)"
+    Control(__UI_NewID).CanHaveFocus = True
+
     __UI_NewID = __UI_NewControl(__UI_Type_Label, "NameLB", 120, 23, 10, 10, __UI_GetID("ControlProperties"))
     SetCaption __UI_NewID, "Name"
     Control(__UI_NewID).HasBorder = True
@@ -1003,6 +1007,7 @@ SUB __UI_AssignIDs
     AddToggleSwitch = __UI_GetID("AddToggleSwitch")
     AddTabControl = __UI_GetID("AddTabControl")
     AddDataGrid = __UI_GetID("AddDataGrid")
+    AddPropertyGrid = __UI_GetID("AddPropertyGrid")
     Stretch = __UI_GetID("Stretch")
     HasBorder = __UI_GetID("HasBorder")
     ShowPercentage = __UI_GetID("ShowPercentage")

@@ -102,7 +102,7 @@ DIM SHARED AddCheckBox AS LONG, AddRadioButton AS LONG
 DIM SHARED AddListBox AS LONG, AddDropdownList AS LONG
 DIM SHARED AddTrackBar AS LONG, AddProgressBar AS LONG
 DIM SHARED AddPictureBox AS LONG, AddFrame AS LONG
-DIM SHARED AddToggleSwitch AS LONG, AddTabControl AS LONG, AddDataGrid AS LONG
+DIM SHARED AddToggleSwitch AS LONG, AddTabControl AS LONG, AddDataGrid AS LONG, AddPropertyGrid AS LONG
 
 'Control toggles
 DIM SHARED Stretch AS LONG, HasBorder AS LONG
@@ -395,6 +395,9 @@ SUB __UI_Click (id AS LONG)
         CASE AddDataGrid
             'A frame with a data grid's columns and rows in its Text (see InFormDataGrid.bm)
             Send Client, "NEWDATAGRID><END>"
+        CASE AddPropertyGrid
+            'A frame with property grid rows in its Text (see InFormPropertyGrid.bm)
+            Send Client, "NEWPROPERTYGRID><END>"
         CASE AddNumericBox
             b$ = MKI$(0)
             SendData b$, 222
@@ -3051,6 +3054,14 @@ SUB DrawEditorIcons
     IconLine 9.5, 2.5, 13.5, 2.5, 1, soft
     IconLine 9.5, 2.5, 9.5, 5, 1, soft
     IconLine 13.5, 2.5, 13.5, 5, 1, soft
+
+    'Property grid: label | value rows, one of them a box being edited
+    EditorIconCanvas AddPropertyGrid, 16
+    IconRoundRect 0.5, 1.5, 15.5, 14.5, 1.5, 1, fg
+    IconLine 2.5, 5, 6, 5, 1.4, soft
+    IconRoundRect 8, 3, 14, 7, 1, 0, acc
+    IconLine 2.5, 11, 6, 11, 1.4, soft
+    IconRoundRect 8, 9, 14, 13, 1, 1, fg
 
     'Data grid: a table with a header row and a current cell
     EditorIconCanvas AddDataGrid, 16
