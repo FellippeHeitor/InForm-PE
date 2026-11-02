@@ -207,7 +207,7 @@ SUB __UI_BeforeUpdateDisplay
         STATIC EditorWasActive AS _BYTE
     $END IF
     STATIC WasDragging AS _BYTE, WasResizing AS _BYTE
-    STATIC NewWindowTop AS INTEGER, NewWindowLeft AS INTEGER
+    STATIC NewWindowTop AS INTEGER, NewWindowLeft AS INTEGER, GotWindowPosition AS _BYTE
 
     IF __UI_TotalSelectedControls < 0 THEN __UI_TotalSelectedControls = 0
 
@@ -304,6 +304,7 @@ SUB __UI_BeforeUpdateDisplay
             CASE "WINDOWPOSITION"
                 NewWindowLeft = CVI(LEFT$(thisData$, 2))
                 NewWindowTop = CVI(MID$(thisData$, 3, 2))
+                GotWindowPosition = True
             CASE "AUTONAME"
                 AutoNameControls = CVI(thisData$)
             CASE "MOUSESWAP"
@@ -517,8 +518,12 @@ SUB __UI_BeforeUpdateDisplay
         IF i = _TOTALDROPPEDFILES THEN _FINISHDROP
     NEXT
 
-    IF NewWindowLeft <> -32001 AND NewWindowTop <> -32001 AND (NewWindowLeft <> _SCREENX OR NewWindowTop <> _SCREENY) THEN
-        _SCREENMOVE NewWindowLeft + 612, NewWindowTop
+    'Stay docked to the right of the editor. Compare against where the preview should be, not where the editor is:
+    'both windows open at the same default spot, so comparing to the editor's position skipped the first move
+    IF GotWindowPosition AND NewWindowLeft <> -32001 AND NewWindowTop <> -32001 THEN
+        IF NewWindowLeft + 612 <> _SCREENX OR NewWindowTop <> _SCREENY THEN
+            _SCREENMOVE NewWindowLeft + 612, NewWindowTop
+        END IF
     END IF
 
     'Check if the editor is still alive
